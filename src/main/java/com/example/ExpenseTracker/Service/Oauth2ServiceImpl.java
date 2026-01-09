@@ -33,6 +33,7 @@ public class Oauth2ServiceImpl implements UserService {
 
                     User user = new User();
                     user.setEmail(userEmail);
+                    user.setName(oAuth2User.getAttribute("name"));
                     user.setProviderType(ProviderType.GOOGLE);
                     user.setProviderId(providerId);
                     user.setPassword(null);
