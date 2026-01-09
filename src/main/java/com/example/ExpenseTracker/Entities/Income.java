@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
-@Table(name="incomes")
+@Table(name = "incomes")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,8 +23,9 @@ public class Income {
     private String incomeDesc;
 
     // @NotBlank only works in the String datatype
-    @Column(nullable = false)
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "income_type", nullable = false)
     private IncomeType incomeType;
 
     @Column(nullable = false)
@@ -35,7 +36,7 @@ public class Income {
     private LocalDate incomeDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
 }

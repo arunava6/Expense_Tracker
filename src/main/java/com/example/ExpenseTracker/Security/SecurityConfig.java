@@ -32,7 +32,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         log.info("Security Filter Chain!!");
-        http.authorizeHttpRequests(auth -> auth.requestMatchers("/auth/**").permitAll()
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**", "/oauth2/**", "/login/oauth2/**").permitAll()
                 .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())

@@ -20,26 +20,28 @@ import java.io.IOException;
 @Slf4j
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-  private final JwtUtil jwtUtil;
-  private final UserService userService;
+    private final JwtUtil jwtUtil;
+    private final UserService userService;
 
-  @Override
-  public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-      Authentication authentication) throws IOException, ServletException {
-    OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
-    OAuth2User oAuth2User = oAuth2AuthenticationToken.getPrincipal();
-    String registrationId = oAuth2AuthenticationToken.getAuthorizedClientRegistrationId();
-    User user = userService.processOAuth2User(oAuth2User, registrationId);
-    String jwtToken = jwtUtil.generateToken(user.getEmail());
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
+        OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
+        OAuth2User oAuth2User = oAuth2AuthenticationToken.getPrincipal();
+        String registrationId = oAuth2AuthenticationToken.getAuthorizedClientRegistrationId();
+        User user = userService.processOAuth2User(oAuth2User, registrationId);
+        String jwtToken = jwtUtil.generateToken(user.getEmail());
 
-    // Create cookie for token transfer
-    jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("accessToken", jwtToken);
-    cookie.setPath("/");
-    cookie.setMaxAge(30); // 30 seconds expiry
-    response.addCookie(cookie);
+        // Create cookie for token transfer
+        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("accessToken", jwtToken);
+        cookie.setPath("/");
+        cookie.setMaxAge(30); // 30 seconds expiry
+        response.addCookie(cookie);
 
-    // Redirect to frontend without token in URL
-    String redirectUrl = "http://localhost:5173/oauth2/redirect";
-    response.sendRedirect(redirectUrl);
-  }
+        // Redirect to frontend without token in URL
+        String redirectUrl = "http://localhost:5173/oauth2/redirect";
+        response.sendRedirect(redirectUrl);
+    }
 }
+
+

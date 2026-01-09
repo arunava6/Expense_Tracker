@@ -5,8 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class LoginResponseDto {
-    private String jwtToken;
+@AllArgsConstructor
+public class PnlResponseDto {
+    private Long totalIncomeAmount;
+    private Long totalExpenseAmount;
+    private Long totalPnl;
 }

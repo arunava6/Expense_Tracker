@@ -26,7 +26,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("Internal Filter");
+        log.info("Internal Filter for: {}", request.getRequestURI());
         try {
             final String authorizationHeader = request.getHeader("Authorization");
             String userEmail = null;
@@ -34,24 +34,33 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 jwtToken = authorizationHeader.substring(7);
                 userEmail = jwtUtil.extractUsername(jwtToken);
+                log.info("Extracted email from JWT: {}", userEmail);
             }
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(userEmail);
                 if (jwtUtil.validationToken(jwtToken, userEmail)) {
-                    log.info("Validate Token!!");
+                    log.info("Token validated successfully for user: {}", userEmail);
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                } else {
+                    log.warn("Token validation failed for user: {}", userEmail);
                 }
             }
 
             filterChain.doFilter(request, response);
 
         } catch (ExpiredJwtException e) {
+            log.error("JWT expired: {}", e.getMessage());
             writeErrorResponse(response, "JWT expired");
+            return; // Important: stop filter chain
         } catch (JwtException e) {
+            log.error("Invalid JWT: {}", e.getMessage());
             writeErrorResponse(response, "invalid JWT");
+            return; // Important: stop filter chain
         } catch (Exception e) {
-            writeErrorResponse(response, "Authentication failed");
+            log.error("Authentication failed: {}", e.getMessage(), e);
+            writeErrorResponse(response, "Authentication failed: " + e.getMessage());
+            return; // Important: stop filter chain
         }
     }
 

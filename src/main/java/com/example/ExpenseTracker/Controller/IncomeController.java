@@ -24,10 +24,22 @@ public class IncomeController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Income added Successfully");
     }
 
+//    @GetMapping("/get")
+//    public ResponseEntity<List<Income>> getIncome(){
+//        return ResponseEntity.status(HttpStatus.FOUND).body(incomeService.getIncome());
+//    }
+
     @GetMapping("/get")
-    public ResponseEntity<List<Income>> getIncome(){
-        return ResponseEntity.status(HttpStatus.FOUND).body(incomeService.getIncome());
+    public ResponseEntity<List<Income>> getIncome(
+            @RequestParam(required = false) String incomeType,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String order
+    ) {
+        return ResponseEntity.ok(
+                incomeService.getIncome(incomeType, sortBy, order)
+        );
     }
+
 
     @DeleteMapping("/delete/{incomeId}")
     public ResponseEntity<String> deleteIncome(@PathVariable Long incomeId){
